@@ -1,13 +1,8 @@
-import {
-  ClerkProvider,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,14 +26,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <ConvexClientProvider>
+          <ClerkProvider>{children}</ClerkProvider>
+        </ConvexClientProvider>
+      </body>
+    </html>
   );
 }
