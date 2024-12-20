@@ -14,17 +14,19 @@ import {
   PencilIcon,
   StarIcon,
   Ticket,
+  XCircle,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
+import PurchaseTicket from "../PurchaseTicket";
 
 const EventCard = ({ eventId }: { eventId: Id<"events"> }) => {
   const { user } = useUser();
   const router = useRouter();
 
   const event = useQuery(api.events.getById, { eventId });
-  const availability = useQuery(api.events.getAvailability, { eventId });
+  const availability = useQuery(api.events.getEventAvailability, { eventId });
 
   const userTicket = useQuery(api.tickets.getUserTicketForEvent, {
     eventId,
@@ -129,12 +131,31 @@ const EventCard = ({ eventId }: { eventId: Id<"events"> }) => {
         </div>
       );
     }
+
+    if (queuePosition) {
+      return (
+        <div className="mt-4">
+          {queuePosition.status === "offered" && (
+            <PurchaseTicket eventId={eventId} />
+          )}
+          {renderQueuePosition()}
+          {queuePosition.status === "expired" && (
+            <div className="p-3 bg-red-50 rounded-lg border border-red-100">
+              <span className="text-red-700 font-medium flex items-center">
+                <XCircle className="w-5 h-5 mr-2" />
+                Offer expired
+              </span>
+            </div>
+          )}
+        </div>
+      );
+    }
   };
 
   return (
     <div
       onClick={() => router.push(`/event/${eventId}`)}
-      className={`bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 cursor-pointer overflow-hidden relative ${isPastEvent ? "opacity-75 hover:opacity-100" : ""} `}
+      className={`bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 cursor-pointer overflow-hidden relative ${isPastEvent ? "opacity-75 hover:opacity-100" : ""}`}
     >
       {imageUrl && (
         <div className="relative w-full h-48">
