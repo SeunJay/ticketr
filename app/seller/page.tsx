@@ -8,7 +8,7 @@ const Seller = async () => {
   if (!userId) redirect("/");
 
   return (
-    <div>
+    <div className="py-24 min-h-screen bg-gray-50">
       <SellerDashboard />
     </div>
   );
