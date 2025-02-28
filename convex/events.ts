@@ -61,6 +61,29 @@ export const create = mutation({
   },
 });
 
+// Get user's tickets with event information
+export const getUserTickets = query({
+  args: { userId: v.string() },
+  handler: async (ctx, { userId }) => {
+    const tickets = await ctx.db
+      .query("tickets")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+
+    const ticketsWithEvents = await Promise.all(
+      tickets.map(async (ticket) => {
+        const event = await ctx.db.get(ticket.eventId);
+        return {
+          ...ticket,
+          event,
+        };
+      })
+    );
+
+    return ticketsWithEvents;
+  },
+});
+
 export const getEventAvailability = query({
   args: { eventId: v.id("events") },
   handler: async (ctx, { eventId }) => {
@@ -229,7 +252,6 @@ export const joinWaitingList = mutation({
   },
 });
 
-
 export const updateEvent = mutation({
   args: {
     eventId: v.id("events"),
@@ -266,7 +288,6 @@ export const updateEvent = mutation({
     return eventId;
   },
 });
-
 
 // Purchase ticket
 export const purchaseTicket = mutation({
